@@ -17,7 +17,7 @@ namespace WavTexture
         Material _material;
         MaterialPropertyBlock _propertyBlock;
 
-        void SetupMesh()
+        void Setup()
         {
             var vertices = new Vector3[kVertexCount];
             for (var i = 0; i < kVertexCount; i++)
@@ -36,39 +36,23 @@ namespace WavTexture
             _mesh.SetIndices(indices, MeshTopology.Lines, 0);
             _mesh.bounds = new Bounds(Vector3.zero, Vector3.one);
             _mesh.UploadMeshData(true);
-        }
 
-        void SetupMaterial()
-        {
             _material = new Material(_shader);
-            _material.hideFlags = HideFlags.DontSave;
+
+            _propertyBlock = new MaterialPropertyBlock();
         }
 
         void OnDestroy()
         {
-            if (Application.isPlaying)
-            {
-                Destroy(_mesh);
-                Destroy(_material);
-            }
-            else
-            {
-                DestroyImmediate(_mesh);
-                DestroyImmediate(_material);
-            }
+            Destroy(_mesh);
+            Destroy(_material);
         }
 
         void Update()
         {
-            if (_mesh == null)
-            {
-                SetupMesh();
-                SetupMaterial();
-                _propertyBlock = new MaterialPropertyBlock();
-            }
+            if (_mesh == null) Setup();
 
             var time = _positionSource != null ? _positionSource.time : Time.time;
-
             _propertyBlock.SetTexture("_WavTex", _wavTexture.GetTexture(_channel));
             _propertyBlock.SetFloat("_StartTime", time * _wavTexture.sampleRate);
             _propertyBlock.SetFloat("_Duration", (float)_wavTexture.sampleRate / 60);
