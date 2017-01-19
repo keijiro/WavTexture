@@ -52,11 +52,11 @@ namespace WavTexture
         // Bake an audio clip into a 2D texture.
         Texture2D BakeClip(AudioClip source, int channel, TextureFormat format)
         {
-            var samples = new float[source.samples];
+            var samples = new float[source.channels * source.samples];
             source.GetData(samples, 0);
 
             var width = 4096;
-            var height = (samples.Length + width - 1) / (4 * width);
+            var height = (source.samples + width - 1) / (4 * width);
 
             var tex = new Texture2D(width, height, format, false, true);
             tex.name = "Channel " + channel;
