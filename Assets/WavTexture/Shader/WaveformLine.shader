@@ -1,10 +1,10 @@
 ﻿Shader "Hidden/WavTexture/Waveform Line"
 {
-	Properties
-	{
+    Properties
+    {
         _WavTex("", 2D) = "gray"{}
         _Color("", Color) = (1, 1, 1, 0.5)
-	}
+    }
 
     CGINCLUDE
 
@@ -68,18 +68,18 @@
 
     ENDCG
 
-	SubShader
-	{
-		Tags { "RenderType"="Transparent" "Queue"="Transparent" }
-		Pass
-		{
+    SubShader
+    {
+        Tags { "RenderType"="Transparent" "Queue"="Transparent" }
+        Pass
+        {
             ZWrite Off
             Blend SrcAlpha One
-			CGPROGRAM
-			#pragma vertex vert
-			#pragma fragment frag
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
             #pragma target 3.0
-			ENDCG
-		}
-	}
+            ENDCG
+        }
+    }
 }
