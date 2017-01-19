@@ -1,8 +1,9 @@
-﻿Shader "Hidden/WavTexture/Waveform Line"
+﻿Shader "Hidden/WavTexture/Lissajous Line"
 {
 	Properties
 	{
-        _WavTex("", 2D) = "gray"{}
+        _XWavTex("", 2D) = "gray"{}
+        _YWavTex("", 2D) = "gray"{}
         _Color("", Color) = (1, 1, 1, 0.5)
 	}
 
@@ -23,25 +24,28 @@
         float4 vertex : SV_POSITION;
     };
 
-    sampler2D _WavTex;
-    float4 _WavTex_TexelSize;
+    sampler2D _XWavTex;
+    sampler2D _YWavTex;
+
+    float4 _XWavTex_TexelSize;
+    float4 _YWavTex_TexelSize;
 
     fixed4 _Color;
 
     // Retrieve a sample from a WavTexture.
-    float GetSample(float position)
+    float GetSample(sampler2D tex, float2 texelSize, float position)
     {
         // Calculate the texture coordinate.
         float p4 = position / 4;
-        float xy = floor(p4) * _WavTex_TexelSize.x;
+        float xy = floor(p4) * texelSize.x;
         float x = frac(xy);
-        float y = floor(xy) * _WavTex_TexelSize.y;
+        float y = floor(xy) * texelSize.y;
 
-        x += _WavTex_TexelSize.x * 0.5;
-        y += _WavTex_TexelSize.y * 0.5;
+        x += texelSize.x * 0.5;
+        y += texelSize.y * 0.5;
 
         // Retrieve the quadrupled sample.
-        float4 s4 = tex2Dlod(_WavTex, float4(x, y, 0, 0));
+        float4 s4 = tex2Dlod(tex, float4(x, y, 0, 0));
 
         // Extract a single sample from the texture sample.
         float i = frac(p4);
@@ -54,10 +58,18 @@
     v2f vert(appdata v)
     {
         float t = _StartTime + v.vertex.x * _Duration;
-        float w = lerp(GetSample(t), GetSample(t + 1), frac(t));
+
+        float wx1 = GetSample(_XWavTex, _XWavTex_TexelSize.xy, t);
+        float wx2 = GetSample(_XWavTex, _XWavTex_TexelSize.xy, t + 1);
+
+        float wy1 = GetSample(_YWavTex, _YWavTex_TexelSize.xy, t);
+        float wy2 = GetSample(_YWavTex, _YWavTex_TexelSize.xy, t + 1);
+
+        float wx = lerp(wx1, wx2, frac(t));
+        float wy = lerp(wy1, wy2, frac(t));
 
         v2f o;
-        o.vertex = UnityObjectToClipPos(float4(v.vertex.x - 0.5, w, 0, 1));
+        o.vertex = UnityObjectToClipPos(float4(wx, wy, 0, 1));
         return o;
     }
     
