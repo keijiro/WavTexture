@@ -13,3 +13,11 @@ Why should I bake a waveform into a texture?
 
 In other words, this technique is only useful when you're creating something not interactive,
 and you prefer utilizing GPU rather than sacrificing the precious CPU time.
+
+Acknowledgement
+---------------
+
+The test song "*A Himitsu - Easier to Fade (feat. Madi Larson)*" was created by Argofox.
+It's shared under a Creative Commons Attribution License. See author's Soundcloud page for further details.
+
+https://soundcloud.com/argofox/a-himitsu-easier-to-fade
