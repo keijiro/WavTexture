@@ -8,11 +8,11 @@ A Unity example showing how to bake a waveform of an audio clip into a texture a
 Why should I bake a waveform into a texture?
 --------------------------------------------
 
-- Pros: You can  render a waveform with almost zero cost on the CPU side. It never waste heap/GC emmory.
-- Cons: You have to bake a waveform at build time. It's not very useful for interactive software.
+- Pros: You can  render a waveform with almost zero cost on the CPU side. It never waste heap/GC memory.
+- Cons: You have to bake a waveform at build time. It's not very useful for interactive contents.
 
 In other words, this technique is only useful when you're creating something not interactive,
-and you prefer utilizing GPU rather than sacrificing the precious CPU time.
+and you prefer torturing GPU rather than sacrificing the precious CPU time.
 
 Acknowledgement
 ---------------
