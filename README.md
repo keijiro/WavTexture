@@ -12,7 +12,7 @@ Why should I bake a waveform into a texture?
 - Cons: You have to bake a waveform at build time. It's not very useful for interactive contents.
 
 In other words, this technique is only useful when you're creating something not interactive,
-and you prefer torturing GPU rather than sacrificing the precious CPU time.
+and you prefer torturing GPU rather than sacrificing the precious CPU time and memory.
 
 Acknowledgement
 ---------------
