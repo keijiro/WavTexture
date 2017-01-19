@@ -3,7 +3,7 @@ WavTexture
 
 A Unity example showing how to bake a waveform of an audio clip into a texture and use it in a shader.
 
-![gif](http://68.media.tumblr.com/30f650ff39f960963c7b8b0e1a090570/tumblr_ok12382h421qio469o1_500.gif)
+![gif](https://68.media.tumblr.com/7f2154db0ecb275a8566cca7b5382a1f/tumblr_ok167y4g8S1qio469o1_400.gif)
 
 Why should I bake a waveform into a texture?
 --------------------------------------------
