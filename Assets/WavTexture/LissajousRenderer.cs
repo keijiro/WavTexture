@@ -1,16 +1,60 @@
+// WavTexture - Audio waveform to texture converter
+// https://github.com/keijiro/WavTexture
+
 using UnityEngine;
 
 namespace WavTexture
 {
+    /// Lissajous graph renderer.
     class LissajousRenderer : MonoBehaviour
     {
-        [SerializeField] WavTexture _wavTexture;
-        [SerializeField] AudioSource _positionSource;
-        [SerializeField] Color _lineColor = new Color(1, 1, 1, 0.5f);
+        #region Editable properties
+
+        /// Source waveform.
+        public WavTexture wavTexture {
+            get { return _wavTexture; }
+            set { _wavTexture = value; }
+        }
+
+        [SerializeField, Tooltip("Source waveform.")]
+        WavTexture _wavTexture;
+
+        /// Synchronizes the position to this audio source.
+        public AudioSource positionSource {
+            get { return _positionSource; }
+            set { _positionSource = value; }
+        }
+
+        [SerializeField, Tooltip("Synchronized the position to this audio source.")]
+        AudioSource _positionSource;
+
+        /// Color of the graph line.
+        public Color color {
+            get { return _color; }
+            set { _color = value; }
+        }
+
+        [SerializeField, Tooltip("Color of the graph line.")]
+        Color _color = new Color(1, 1, 1, 0.5f);
+
+        /// Graph resolution (the number of vertices in the graph).
+        public int resolution {
+            get { return _resolution; }
+            set { _resolution = value; OnValidate(); }
+        }
+
+        [SerializeField, Tooltip("Graph resolution (the number of vertices in the graph).")]
+        int _resolution = 44100 / 30;
+
+        #endregion
+
+        #region Internal resources
 
         [SerializeField, HideInInspector] Shader _shader;
 
-        const int kVertexCount = 44100 / 30;
+        #endregion
+
+        #region Private members
 
         Mesh _mesh;
         Material _material;
@@ -18,46 +62,75 @@ namespace WavTexture
 
         void Setup()
         {
-            var vertices = new Vector3[kVertexCount];
-            for (var i = 0; i < kVertexCount; i++)
-                vertices[i] = new Vector3((float)i / (kVertexCount - 1), 0, 0);
-
-            var indices = new int[(kVertexCount - 1) * 2];
-            for (var i = 0; i < kVertexCount - 1; i++)
+            if (_mesh == null)
             {
-                indices[i * 2] = i;
-                indices[i * 2 + 1] = i + 1;
+                // Simple straight line mesh.
+                var vertices = new Vector3[_resolution];
+                for (var i = 0; i < _resolution; i++)
+                    vertices[i] = new Vector3((float)i / (_resolution - 1), 0, 0);
+
+                var indices = new int[(_resolution - 1) * 2];
+                for (var i = 0; i < _resolution - 1; i++)
+                {
+                    indices[i * 2] = i;
+                    indices[i * 2 + 1] = i + 1;
+                }
+
+                _mesh = new Mesh();
+                _mesh.vertices = vertices;
+                _mesh.SetIndices(indices, MeshTopology.Lines, 0);
+                _mesh.bounds = new Bounds(Vector3.zero, Vector3.one);
+                _mesh.UploadMeshData(true);
             }
 
-            _mesh = new Mesh();
-            _mesh.vertices = vertices;
-            _mesh.SetIndices(indices, MeshTopology.Lines, 0);
-            _mesh.bounds = new Bounds(Vector3.zero, Vector3.one);
-            _mesh.UploadMeshData(true);
+            if (_material == null)
+            {
+                _material = new Material(_shader);
+                _propertyBlock = new MaterialPropertyBlock();
+            }
+        }
 
-            _material = new Material(_shader);
+        #endregion
 
-            _propertyBlock = new MaterialPropertyBlock();
+        #region MonoBehaviour functions
+
+        void OnValidate()
+        {
+            _resolution = Mathf.Clamp(_resolution, 2, 65535);
+
+            if (_mesh != null)
+            {
+                Destroy(_mesh);
+                _mesh = null;
+            }
         }
 
         void OnDestroy()
         {
-            Destroy(_mesh);
-            Destroy(_material);
+            if (_mesh != null)
+                Destroy(_mesh);
+
+            if (_material != null)
+                Destroy(_material);
         }
 
         void Update()
         {
-            if (_mesh == null) Setup();
+            Setup();
 
             var time = _positionSource != null ? _positionSource.time : Time.time;
             _propertyBlock.SetTexture("_XWavTex", _wavTexture.GetTexture(0));
             _propertyBlock.SetTexture("_YWavTex", _wavTexture.GetTexture(1));
             _propertyBlock.SetFloat("_StartTime", time * _wavTexture.sampleRate);
             _propertyBlock.SetFloat("_Duration", (float)_wavTexture.sampleRate / 60);
-            _propertyBlock.SetColor("_Color", _lineColor);
+            _propertyBlock.SetColor("_Color", _color);
 
-            Graphics.DrawMesh(_mesh, transform.localToWorldMatrix, _material, gameObject.layer, null, 0, _propertyBlock);
+            Graphics.DrawMesh(
+                _mesh, transform.localToWorldMatrix, _material,
+                gameObject.layer, null, 0, _propertyBlock
+            );
         }
+
+        #endregion
     }
 }

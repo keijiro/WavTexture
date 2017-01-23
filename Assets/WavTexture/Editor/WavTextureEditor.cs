@@ -1,4 +1,7 @@
-﻿using UnityEditor;
+﻿// WavTexture - Audio waveform to texture converter
+// https://github.com/keijiro/WavTexture
+
+using UnityEditor;
 using UnityEngine;
 using System.IO;
 using System.Collections.Generic;

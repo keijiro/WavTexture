@@ -1,3 +1,6 @@
+// WavTexture - Audio waveform to texture converter
+// https://github.com/keijiro/WavTexture
+
 #include "UnityCG.cginc"
 
 float _StartTime;

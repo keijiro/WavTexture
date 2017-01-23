@@ -1,7 +1,11 @@
+// WavTexture - Audio waveform to texture converter
+// https://github.com/keijiro/WavTexture
+
 using UnityEngine;
 
 namespace WavTexture
 {
+    /// Texture-encoded audio waveform asset class.
     public class WavTexture : ScriptableObject
     {
         #region Serialized properties

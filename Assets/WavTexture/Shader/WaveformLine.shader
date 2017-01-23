@@ -1,4 +1,7 @@
-﻿Shader "Hidden/WavTexture/Waveform Line"
+﻿// WavTexture - Audio waveform to texture converter
+// https://github.com/keijiro/WavTexture
+
+Shader "Hidden/WavTexture/Waveform Line"
 {
     Properties
     {
@@ -8,10 +11,7 @@
 
     CGINCLUDE
 
-    #include "UnityCG.cginc"
-
-    float _StartTime;
-    float _Duration;
+    #include "Common.cginc"
 
     struct appdata
     {
@@ -28,39 +28,18 @@
 
     fixed4 _Color;
 
-    // Retrieve a sample from a WavTexture.
-    float GetSample(float position)
-    {
-        // Calculate the texture coordinate.
-        float p4 = position / 4;
-        float xy = floor(p4) * _WavTex_TexelSize.x;
-        float x = frac(xy);
-        float y = floor(xy) * _WavTex_TexelSize.y;
-
-        x += _WavTex_TexelSize.x * 0.5;
-        y += _WavTex_TexelSize.y * 0.5;
-
-        // Retrieve the quadrupled sample.
-        float4 s4 = tex2Dlod(_WavTex, float4(x, y, 0, 0));
-
-        // Extract a single sample from the texture sample.
-        float i = frac(p4);
-        float w = i < 0.25 ? s4.r : (i < 0.5 ? s4.g : (i < 0.75 ? s4.b : s4.a));
-
-        // Normalize and return.
-        return w * 2 - 1;
-    }
-    
     v2f vert(appdata v)
     {
         float t = _StartTime + v.vertex.x * _Duration;
-        float w = lerp(GetSample(t), GetSample(t + 1), frac(t));
+        float s1 = GetSample(_WavTex, _WavTex_TexelSize.xy, t);
+        float s2 = GetSample(_WavTex, _WavTex_TexelSize.xy, t + 1);
+        float w = lerp(s1, s2, frac(t));
 
         v2f o;
         o.vertex = UnityObjectToClipPos(float4(v.vertex.x - 0.5, w, 0, 1));
         return o;
     }
-    
+
     fixed4 frag(v2f i) : SV_Target
     {
         return _Color;

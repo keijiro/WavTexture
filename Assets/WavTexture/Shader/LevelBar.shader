@@ -3,7 +3,7 @@
     Properties
     {
         _Color("Color", Color) = (1, 1, 1, 1)
-        [HideInInspector] _LevelTex("", 2D) = "white"{}
+        [HideInInspector] _LevelTex("", 2D) = "black"{}
     }
 
     CGINCLUDE
