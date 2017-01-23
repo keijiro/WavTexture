@@ -20,7 +20,7 @@ Shader "Hidden/WavTexture/Level Monitor"
     // Crop the current frame from the soruce waveform into a 2D texture.
     half4 frag_crop(v2f_img i) : SV_Target
     {
-        float2 uv = i.uv.xy - 0.5 * _CropRes; // Cancel half texel offset.
+        float2 uv = i.uv.xy - 0.5 * _MainTex_TexelSize.xy; // Cancel half texel offset.
         float t = _StartTime + (uv.x * _CropRes + uv.y) * _Duration;
         float s1 = GetSample(_MainTex, _MainTex_TexelSize.xy, t);
         float s2 = GetSample(_MainTex, _MainTex_TexelSize.xy, t + 1);
